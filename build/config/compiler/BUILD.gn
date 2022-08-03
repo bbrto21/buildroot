@@ -20,6 +20,7 @@ import("//build/fuchsia/config.gni")
 import("//build/toolchain/ccache.gni")
 import("//build/toolchain/clang.gni")
 import("//build/toolchain/wasm.gni")
+import("//build/toolchain/custom/custom.gni")
 
 declare_args() {
   # Normally, Android builds are lightly optimized, even for debug builds, to
@@ -520,6 +521,17 @@ config("runtime_library") {
     include_dirs = [
       "//third_party/libcxx/include",
       "//third_party/libcxxabi/include",
+    ]
+  } else if (use_tizen_cxx) {
+    tizen_target_triple = "i586-tizen-linux-gnu"
+    if (custom_target_triple == "arm-linux-gnueabi") {
+      tizen_target_triple = "armv7l-tizen-linux-gnueabi"
+    } else if (custom_target_triple == "aarch64-linux-gnu") {
+      tizen_target_triple = "aarch64-tizen-linux-gnu"
+    }
+    include_dirs = [
+      "${custom_sysroot}/usr/lib/gcc/${tizen_target_triple}/9.2.0/include/c++/",
+      "${custom_sysroot}/usr/lib/gcc/${tizen_target_triple}/9.2.0/include/c++/${tizen_target_triple}"
     ]
   }
 
